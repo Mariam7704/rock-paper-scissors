@@ -1,49 +1,108 @@
 function getComputerChoice(){
     let computerChoice = Math.floor(Math.random()*3);
 
-    if(computerChoice === 0) return "rock";
-    else if(computerChoice === 1) return "paper";
-    else return "scissors";
+    if(computerChoice === 0) return "Rock";
+    else if(computerChoice === 1) return "Paper";
+    else return "Scissors";
 }
 
-function getHumanChoice(){
-    let userChoice=prompt("Your Turn!");
-    return userChoice.toLowerCase();
-}
 
 function playRound(humanSelection,computerSelection){
-if(humanSelection === computerSelection){
-    console.log ("It's a tie");
+    const winner=document.querySelector("#winner");
+    if(humanSelection === computerSelection){
+    winner.textContent="It's a tie";
 }
-else if(humanSelection === "rock" && computerSelection === "scissors" ||
-    humanSelection ==="paper" && computerSelection === "rock" ||
-    humanSelection === "scissors" && computerSelection === "paper"
+else if(humanSelection === "Rock" && computerSelection === "Scissors" ||
+    humanSelection ==="Paper" && computerSelection === "Rock" ||
+    humanSelection === "Scissors" && computerSelection === "Paper"
 ){
     humanScore++;
-    console.log (`You win! ${humanSelection} beats ${computerSelection}`);
+    winner.textContent= `You win! ${humanSelection} beats ${computerSelection}`;
 }
 else{
     computerScore++;
-    console.log(`You lose! ${computerSelection} beats ${humanSelection}`);
+    winner.textContent=`You lose! ${computerSelection} beats ${humanSelection}`;
 }
 }
 
-function playGame(){
-    for(let i=0; i<5;i++){
-        const humanSelection=getHumanChoice();
-        const computerSelection=getComputerChoice();
-        
-        playRound(humanSelection,computerSelection);
-        
-        console.log(`Human score = ${humanScore}`);
-        console.log(`Computer score = ${computerScore}`);
-    }
-if(computerScore>humanScore) console.log("You lose!");
-else if(humanScore>computerScore) console.log("You win!");
-else console.log("It's a tie!")
+function resetText(){
+    hSelection.textContent = "You chose: ";
+    cSelection.textContent = "Computer chose: ";
+    hScore.textContent = "Human score: ";
+    cScore.textContent = "Computer score: ";
+    winner.textContent="";
+    finalWinner.textContent="";
 }
+
+function resetGame(){
+    resetText();
+    enableButtons();
+    
+    rounds=0;
+    computerScore=0;
+    humanScore=0;
+}
+
+function playGame(e){
+    resetText();
+    
+    if(rounds===5){
+        resetGame();
+    }
+    const computerSelection = getComputerChoice();
+    const humanSelection = e.target.id;
+
+    playRound(humanSelection, computerSelection);
+
+    hSelection.textContent += humanSelection;
+    cSelection.textContent += computerSelection;
+    hScore.textContent += humanScore;
+    cScore.textContent += computerScore;
+
+    rounds++;
+
+    if(rounds===5){
+        if(humanScore>computerScore) finalWinner.textContent="Game over, You win!";
+        else if(computerScore>humanScore) finalWinner.textContent="Game over, You lose!";
+        else finalWinner.textContent="Game over, It's a tie";
+        
+        disableButtons();
+    }
+
+}
+
+function disableButtons() {
+    buttons.forEach(button => {
+        if (button.id !== "newGame") {
+            button.disabled = true;
+        }
+    });
+}
+
+function enableButtons() {
+    buttons.forEach(button => {
+        if (button.id !== "newGame") {
+            button.disabled = false;
+        }
+    });
+}
+
 let humanScore=0;
 let computerScore=0;
+let rounds=0
 
-playGame();
+const hSelection=document.querySelector("#hSelection");
+const cSelection=document.querySelector("#cSelection");
+const hScore=document.querySelector("#hScore");
+const cScore=document.querySelector("#cScore");
+const finalWinner=document.querySelector("#finalWinner");
+
+const buttons = document.querySelectorAll("button");
+buttons.forEach(button => {
+    button.addEventListener("click", playGame);
+});
+
+const newGameBtn=document.querySelector("#newGame");
+newGameBtn.addEventListener("click",resetGame);
+
 
